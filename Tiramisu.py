@@ -159,7 +159,7 @@ def unit_test():
     chainer.cuda.get_device(0).use()
 
     # model = Tiramisu103(2)
-    model = Tiramisu1(2)
+    model = Tiramisu103(2)
     model.to_gpu(0)
     optimizer = chainer.optimizers.Adam()
     optimizer.setup(model)
