@@ -1,3 +1,11 @@
+# coding:utf-8
+
+# This is a chainer implementation of FC-DenseNet (Tiramisu103)
+
+# author: Qishen Ha
+# email: haqishen@mi.t.u-tokyo.ac.jp
+# github: https://github.com/haqishen
+
 import chainer
 from chainer import Variable
 import chainer.links as L
@@ -8,7 +16,7 @@ from pdb import set_trace as st
 class BRCD(chainer.Chain):
     # batch normalization
     # relu
-    # convolution 3x3
+    # convolution
     # dropout
     def __init__(self, in_channel, out_channel, conv_size, stride=1, pad=1, drop_ratio=0.2):
         self.drop_ratio = drop_ratio
@@ -38,6 +46,7 @@ class DenseBlock(chainer.Chain):
             stack = F.concat((stack, h), axis=1)
             if self.is_up:
                 new_features.append(h)
+        # in official implementation, 'stack' is unused in upsampling path.
         if self.is_up:
             return F.concat(new_features, axis=1)
         else:
@@ -107,7 +116,6 @@ class Tiramisu103(chainer.Chain):
         x = self.forward(x)
         self.loss = F.softmax_cross_entropy(x, t)
         self.accuracy = calculate_accuracy(x, t)
-
         return self.loss
 
     def forward(self, x):
@@ -158,13 +166,11 @@ def unit_test():
     chainer.cuda.check_cuda_available()
     chainer.cuda.get_device(0).use()
 
-    # model = Tiramisu103(2)
     model = Tiramisu103(2)
     model.to_gpu(0)
     optimizer = chainer.optimizers.Adam()
     optimizer.setup(model)
 
-    # y = model.forward(x)
     for i in range(3):
 
         x = np.random.rand(1,3,224,224).astype(np.float32)
@@ -178,10 +184,12 @@ def unit_test():
 
         print('| acc : %.2f' % model.accuracy)
         print('| loss: %.2f' % model.loss.data)
+        print('')
 
         del x,t
+        
+    print('| ok!')
 
 if __name__ == '__main__':
     unit_test()
-    print('| ok!')
 
