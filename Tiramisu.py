@@ -167,9 +167,9 @@ def unit_test():
     # y = model.forward(x)
     for i in range(3):
 
-        x = np.random.rand(1,3,1280,1920).astype(np.float32)
+        x = np.random.rand(1,3,224,224).astype(np.float32)
         x = chainer.Variable(chainer.cuda.cupy.asarray(x))
-        t = (np.random.rand(1,1280,1920) * 2).astype(np.int32)
+        t = (np.random.rand(1,224,224) * 2).astype(np.int32)
         t = chainer.Variable(chainer.cuda.cupy.asarray(t))
         loss = model(x,t)
         model.cleargrads()
